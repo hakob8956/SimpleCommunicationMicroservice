@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="~/js/signalr.min.js"></script>
+<div class="text-center">
+    <h1>Test</h1>
+    <textarea id = "input" style="width: 300px;height: 400px;"></textarea><br />
+    <button id = "submit">Submit</button><br />
+    <textarea id = "output" style="width: 300px;height: 400px;"></textarea>
+</div>
+
+<script>
+    const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:5001/api/connect")
+            .build();
+    
+        hubConnection.on("onReply", function (data) {
+            console.log("output",data)
+            document.getElementById("output").innerText = data;
+        });
+        
+        hubConnection.on("Test", function (data) {
+            console.log("output",data)
+            document.getElementById("output").innerText = data;
+        });
+
+        document.getElementById("submit").addEventListener("click", function (e) {
+            document.getElementById("output").innerText = 'Processing...';
+            let message = document.getElementById("input").value;
+            console.log("Input",message)
+            hubConnection.invoke("Exec", message);
+        });
+ 
+        hubConnection.start();
+</script>
